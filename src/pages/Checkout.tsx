@@ -51,7 +51,7 @@ interface WorkflowNode {
   data: {
       id: string;
       label: string;
-      price: string;
+      price: number;
       description: string;
       serviceId: string;
       icon?: string;
