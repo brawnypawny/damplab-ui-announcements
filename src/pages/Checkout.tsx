@@ -161,6 +161,21 @@ export default function Checkout() {
     }
   };
 
+  const parsePriceToNumber = (price: string): number => {
+    if (!price) return 0;
+    const rangeMatch = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
+    if (rangeMatch) {
+      const low = parseFloat(rangeMatch[1]);
+      const high = parseFloat(rangeMatch[2]);
+      return (low + high) / 2; // average
+    }
+    const singleMatch = price.match(/^\d+(?:\.\d+)?$/);
+    if (singleMatch) {
+      return parseFloat(price);
+    }
+    return 0; // default for invalid or pending
+  };
+
   const calculateServiceCost = (workflow: WorkflowNode[]) => {
     return workflow.reduce((total, node) => total + (node.data.price), 0);
   };
@@ -189,7 +204,7 @@ export default function Checkout() {
         acc[label].nodes.push(node);  // Add node to array
       }
       return acc;
-    }, {} as { [key: string]: { count: number; cost: number; nodes: WorkflowNode[] } });
+    }, {} as { [key: string]: { count: number; cost: string; nodes: WorkflowNode[] } });
   };
 
   const calculateTotalJobCost = (workflows: WorkflowNode[][]) => {

@@ -81,10 +81,18 @@ export default function LoginForm() {
 
       {userProps.isDamplabStaff && (
         <>
-          <MenuButton navigateTo='/dashboard'><ViewStreamIcon />Dashboard<br />(See Submitted Jobs)</MenuButton>
-          <MenuButton navigateTo='/edit'><EditIcon />Admin Edit<br />(Edit Services)</MenuButton>
-          <MenuButton navigateTo='/release_notes'><FormatListBulletedIcon />Release Notes<br />(+ Other Admin Info)</MenuButton>
-          <MenuButton navigateTo='/edit_announcements'><CampaignIcon />Add Announcement<br />(+ Edit)</MenuButton>
+          <Button variant="contained" onClick={() => navigate('/dashboard')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
+            <ViewStreamIcon sx={{m:1, ml:-3}}/>DASHBOARD<br/>(See Submitted Jobs)
+          </Button> 
+          <Button variant="contained" onClick={() => navigate('/edit')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
+            <EditSquareIcon sx={{m:1, ml:-3}}/>Admin Edit<br/>(Services And More)
+          </Button>
+          <Button variant="contained" onClick={() => navigate('/release_notes')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
+            <FormatListBulletedIcon sx={{m:1, ml:-3}}/>Release Notes<br/>(+ Other Admin Info)
+          </Button> 
+          <Button variant="contained" onClick={() => navigate('/edit_announcements')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
+            <CampaignIcon sx={{m:1, ml:-3}}/>Add Announcement<br/>(+ Edit)
+          </Button>
         </>
       )}
       <Button variant="contained" color="secondary" onClick={logout}  sx={{ m: 5 }}>Logout</Button>
