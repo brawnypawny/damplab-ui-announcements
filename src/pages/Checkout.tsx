@@ -26,7 +26,8 @@ import {
   ListItemText,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
+  Alert
 } from "@mui/material";
 
 import CircleIcon from '@mui/icons-material/Circle';
@@ -161,11 +162,44 @@ export default function Checkout() {
     }
   };
 
+  const parsePriceToNumber = (price: string): number => {
+    if (!price) return 0;
+    const rangeMatch = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
+    if (rangeMatch) {
+      const low = parseFloat(rangeMatch[1]);
+      const high = parseFloat(rangeMatch[2]);
+      return (low + high) / 2; // average
+    }
+    const singleMatch = price.match(/^\d+(?:\.\d+)?$/);
+    if (singleMatch) {
+      return parseFloat(price);
+    }
+    return 0; // default for invalid or pending
+  };
+
   const calculateServiceCost = (workflow: WorkflowNode[]) => {
-  return workflow.reduce((total, node) => {
-    const price = node.data.price ?? 0; // default to 0 if price is missing
-    return total + price;
-    }, 0);
+    return workflow.reduce((total, node) => total + parsePriceToNumber(node.data.price), 0);
+  };
+
+  const formatPriceLabel = (price: string): string => {
+    if (!price) return "[Price Pending Review]";
+
+    // Match a range like "100 - 200"
+    const matchRange = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
+    if (matchRange) {
+      const low = parseFloat(matchRange[1]).toFixed(2);
+      const high = parseFloat(matchRange[2]).toFixed(2);
+      return `Estimated Price: $${low} - $${high}`;
+    }
+
+    // Match a single price like "150"
+    const matchSingle = price.match(/^\d+(?:\.\d+)?$/);
+    if (matchSingle) {
+      const value = parseFloat(price).toFixed(2);
+      return `$${value}`;
+    }
+
+    return "[Price Pending Review]";
   };
 
   const groupServicesByLabel = (workflow: WorkflowNode[]) => {
@@ -182,7 +216,7 @@ export default function Checkout() {
         acc[label].nodes.push(node);  // Add node to array
       }
       return acc;
-    }, {} as { [key: string]: { count: number; cost: number; nodes: WorkflowNode[] } });
+    }, {} as { [key: string]: { count: number; cost: string; nodes: WorkflowNode[] } });
   };
 
   const calculateTotalJobCost = (workflows: WorkflowNode[][]) => {
@@ -394,7 +428,7 @@ export default function Checkout() {
             )}
           </Box>
           <Typography variant="body2" color="text.secondary">
-            ${(service.cost * service.count).toFixed(2)}
+            {formatPriceLabel(service.cost)}
           </Typography>
         </Box>
       }
@@ -482,26 +516,55 @@ export default function Checkout() {
   }}
 >
   <Typography variant="h6" sx={{ mb: 2 }}>
-    Order summary
+    Order Summary
   </Typography>
 
   <Box>
     {workflows.map((workflow, index) => (
+    <Box key={index} sx={{ mb: 3 }}>
       <Box
-        key={index}
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 2
+          mb: 1
         }}
       >
-      <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500 }}>
+        <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500, mb: -2 }}>
           Workflow {index + 1}
         </Typography>
-        <Typography variant="subtitle1" sx={{ fontSize: '0.875rem' }}>
+        {/*<Typography variant="subtitle1" sx={{ fontSize: '0.875rem' }}>
           ${calculateServiceCost(workflow).toFixed(2)}
-        </Typography>
+        </Typography>*/}
+      </Box>
+
+        <List dense>
+          {workflow.map((node) => (
+            <ListItem
+              key={node.id}
+              sx={{ pl: 2, display: 'flex', justifyContent: 'space-between' }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ListItemIcon sx={{ minWidth: '30px' }}>
+                  <CircleIcon sx={{ fontSize: '0.5rem' }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography sx={{ fontSize: '0.85rem' }}>
+                      {node.data.label}
+                    </Typography>
+                  }
+                />
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{ fontSize: '0.85rem', textAlign: 'right', minWidth: '80px' }}
+              >
+                {formatPriceLabel(node.data.price)}
+              </Typography>
+            </ListItem>
+          ))}
+        </List>
       </Box>
     ))}
 
@@ -512,16 +575,22 @@ export default function Checkout() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        mb: 3
+        mb: 1
       }}
     >
       <Typography variant="h6" fontWeight="bold">
-        Total Cost
+        Estimated Cost*
       </Typography>
       <Typography variant="h6" fontWeight="bold">
         ${calculateTotalJobCost(workflows).toFixed(2)}
       </Typography>
     </Box>
+
+    <Alert
+      severity="info" color="error" sx={{ mb: 3, borderRadius: 2}}
+    >
+      *This cost is subject to lab review. Final pricing is likely to vary.
+    </Alert>
 
     <Button
       variant="contained"
@@ -532,7 +601,7 @@ export default function Checkout() {
         width: '100%'
       }}
     >
-      CHECKOUT
+      SUBMIT JOB
     </Button>
   </Box>
 </Grid>

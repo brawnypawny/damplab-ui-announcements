@@ -6,6 +6,7 @@ import AccountTreeIcon        from '@mui/icons-material/AccountTree';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ViewStreamIcon         from '@mui/icons-material/ViewStream';
 import CampaignIcon           from '@mui/icons-material/Campaign';
+import EditSquareIcon         from '@mui/icons-material/EditSquare';
 
 import { UserContext, UserContextProps, UserProps } from "../contexts/UserContext";
 import  AnnouncementBox  from '../components/AnnouncementBox';
@@ -82,7 +83,7 @@ export default function LoginForm() {
             <ViewStreamIcon sx={{m:1, ml:-3}}/>DASHBOARD<br/>(See Submitted Jobs)
           </Button> 
           <Button variant="contained" onClick={() => navigate('/edit')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
-            <CampaignIcon sx={{m:1, ml:-3}}/>Admin Edit<br/>(Edit Services)
+            <EditSquareIcon sx={{m:1, ml:-3}}/>Admin Edit<br/>(Services And More)
           </Button>
           <Button variant="contained" onClick={() => navigate('/release_notes')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
             <FormatListBulletedIcon sx={{m:1, ml:-3}}/>Release Notes<br/>(+ Other Admin Info)
