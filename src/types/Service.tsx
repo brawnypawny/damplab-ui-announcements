@@ -5,6 +5,7 @@ export type Service = {
     name: string;
     price: number;
     icon: string;
+    price: number;
     // optional result params
     resultParams?: string[];
     parameters?: Parameter[];
