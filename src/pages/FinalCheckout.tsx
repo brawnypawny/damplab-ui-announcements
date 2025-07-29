@@ -185,30 +185,41 @@ const handleSubmitJob = () => {
 
 
   return (
-  <Box sx={{ display: 'flex', gap: 4, padding: '20px', position: 'relative' }}>
+  <div>
+     <Box sx={{ mb: 3, width: '30%' }}>
+      <Typography
+        variant="h4"
+        sx={(theme) => ({
+          textAlign: 'left',
+          fontWeight: 500,
+          fontSize: '1.75rem',
+          borderBottom: `2px solid ${theme.palette.primary.main}`,
+          paddingBottom: '8px'
+        })}
+      >
+        Checkout
+      </Typography>
+    </Box>
+
+    <div style={{ textAlign: 'left' }}>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={() => navigate('/checkout')}
+        sx={{
+          alignSelf: 'flex-start',
+          textTransform: 'none',
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          mb: 5,
+        }}
+      >
+        Back to Job
+      </Button>
+    </div>
     
     {/* Left Column - Forms */}
     <Box sx={{ flex: '1 1 60%', marginRight: '40%' }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 500, fontSize: '1.75rem' }}>
-          Checkout
-        </Typography>
-
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => navigate('/checkout')}
-          sx={{
-            alignSelf: 'flex-start',
-            textTransform: 'none',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            mb: 2,
-          }}
-        >
-          Back to Job
-        </Button>
-      </Box>
 
       <Grid item xs={12}>
         <TextField
@@ -258,95 +269,95 @@ const handleSubmitJob = () => {
 
 
 
-    
-    </Box>
+      
+      </Box>
 
-    {/* Right Column - Order Summary */}
-    <Box
-      sx={{
-        position: 'fixed',
-        right: '40px',
-        top: '100px',
-        width: '35%',
-        backgroundColor: '#f5f5f5',
-        padding: 3,
-        border: '1px solid #ddd',
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
-      <Typography variant="h5" sx={{ mb: 3 }}>
-        Order summary
-      </Typography>
+      {/* Right Column - Order Summary */}
+      <Box
+        sx={{
+          position: 'fixed',
+          right: '40px',
+          top: '100px',
+          width: '35%',
+          backgroundColor: '#f5f5f5',
+          padding: 3,
+          border: '1px solid #ddd',
+          borderRadius: 2,
+          boxShadow: 3,
+        }}
+      >
+        <Typography variant="h5" sx={{ mb: 3 }}>
+          Order summary
+        </Typography>
 
-      <Box>
-        {workflowCosts?.map((workflow: WorkflowCost, index: number) => (
+        <Box>
+          {workflowCosts?.map((workflow: WorkflowCost, index: number) => (
+            <Box
+              key={index}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2,
+              }}
+            >
+              <Typography variant="body1">Workflow {index + 1}</Typography>
+              <Typography variant="body1">${workflow.cost.toFixed(2)}</Typography>
+            </Box>
+          ))}
+
+          <Divider sx={{ my: 2 }} />
+
           <Box
-            key={index}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              mb: 2,
+              mb: 3,
             }}
           >
-            <Typography variant="body1">Workflow {index + 1}</Typography>
-            <Typography variant="body1">${workflow.cost.toFixed(2)}</Typography>
+            <Typography variant="h6" fontWeight="bold">
+              Total Cost
+            </Typography>
+            <Typography variant="h6" fontWeight="bold">
+              ${totalCost?.toFixed(2)}
+            </Typography>
           </Box>
-        ))}
 
-        <Divider sx={{ my: 2 }} />
-
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 3,
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold">
-            Total Cost
-          </Typography>
-          <Typography variant="h6" fontWeight="bold">
-            ${totalCost?.toFixed(2)}
-          </Typography>
-        </Box>
-
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleSubmitJob}
-          disabled={!isFormValid()}
-        >
-          Submit Job
-        </Button>
-
-
-        <Snackbar
-          open={snackbarState.open}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          sx={{ mt: 6 }}
-        >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity={snackbarState.severity}
-            variant="filled"
-            sx={{
-              width: '100%',
-              minWidth: '300px',
-              boxShadow: 2,
-              fontSize: '0.95rem',
-            }}
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleSubmitJob}
+            disabled={!isFormValid()}
           >
-            {snackbarState.message}
-          </Alert>
-        </Snackbar>
+            Submit Job
+          </Button>
+
+
+          <Snackbar
+            open={snackbarState.open}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            sx={{ mt: 6 }}
+          >
+            <Alert
+              onClose={handleSnackbarClose}
+              severity={snackbarState.severity}
+              variant="filled"
+              sx={{
+                width: '100%',
+                minWidth: '300px',
+                boxShadow: 2,
+                fontSize: '0.95rem',
+              }}
+            >
+              {snackbarState.message}
+            </Alert>
+          </Snackbar>
+        </Box>
       </Box>
-    </Box>
-  </Box>
+  </div>
 );
 }
