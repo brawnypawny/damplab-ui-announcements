@@ -77,6 +77,7 @@ export default function FinalCheckout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [tabValue, setTabValue] = React.useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
   const [snackbarState, setSnackbarState] = useState<SnackbarState>({
     open: false,
@@ -88,7 +89,6 @@ export default function FinalCheckout() {
   const [createJob] = useMutation(CREATE_JOB, {
     onCompleted: (data) => {
       // Store job details in localStorage for persistence
-      console.log("Successfully created job:", data);
       let fileName = `${data.createJob.id}_${new Date().toLocaleString()}`;
       let file = {
         fileName: fileName,
@@ -157,9 +157,11 @@ export default function FinalCheckout() {
 */
 const handleSubmitJob = () => {
   if (!isFormValid()) return;
+  setSubmitting(true);
 
   const workflows = location.state?.orderSummary?.workflows || [];
 
+  try {
     const data = {
       name: formData.workflowName,
       username: formData.username,
@@ -178,9 +180,14 @@ const handleSubmitJob = () => {
         )
       }))
     };
+    console.log("Submitting job with data:", data);
+    createJob({ variables: { createJobInput: data } });
+    } catch (error) {
+    console.error('Job submission failed:', error);
+    setSubmitting(false); // Re-enable button if error occurs
+  }
 
-  console.log("Submitting job with data:", data);
-  createJob({ variables: { createJobInput: data } });
+
 };
 
 
@@ -324,15 +331,15 @@ const handleSubmitJob = () => {
             </Typography>
           </Box>
 
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleSubmitJob}
-            disabled={!isFormValid()}
-          >
-            Submit Job
-          </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handleSubmitJob}
+          disabled={!isFormValid() || submitting}
+        >
+          Submit Job
+        </Button>
 
 
           <Snackbar
