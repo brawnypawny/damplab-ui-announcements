@@ -84,7 +84,7 @@ export const EditServicesTable: React.FC = () => {
   const handleCreate = async (newRow: GridRowModel) => {
     const newService = {
       name: newRow.name || '',
-      price: newRow.price,
+      price: newRow.price || '',
       icon: '',
       price: Number(newRow.price) || null,
       parameters: newRow.parameters || [],
