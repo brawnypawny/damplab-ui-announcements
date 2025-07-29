@@ -168,19 +168,10 @@ export default function Checkout() {
   const formatPriceLabel = (price: number): string => {
     if (!price) return "[Price Pending Review]";
 
-<<<<<<< HEAD
     if (price > 0) {
       return `$${price.toFixed(2)}`
     } else {
       return "[Price Pending Review]"
-=======
-    // Match a range like "100 - 200"
-    const matchRange = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
-    if (matchRange) {
-      const low = parseFloat(matchRange[1]).toFixed(2);
-      const high = parseFloat(matchRange[2]).toFixed(2);
-      return `$${low} - $${high}`;
->>>>>>> aa4779f (Style: Reduced clutter on checkout page)
     }
   };
 
