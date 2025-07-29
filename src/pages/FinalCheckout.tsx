@@ -208,10 +208,28 @@ const handleSubmitJob = () => {
     console.error('Job submission failed:', error);
     setSubmitting(false); // Re-enable button if error occurs
   }
-
-
 };
 
+  const formatPriceLabel = (price: string): string => {
+    if (!price) return "[Price Pending Review]";
+
+    // Match a range like "100 - 200"
+    const matchRange = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
+    if (matchRange) {
+      const low = parseFloat(matchRange[1]).toFixed(2);
+      const high = parseFloat(matchRange[2]).toFixed(2);
+      return `$${low} - $${high}`;
+    }
+
+    // Match a single price like "150"
+    const matchSingle = price.match(/^\d+(?:\.\d+)?$/);
+    if (matchSingle) {
+      const value = parseFloat(price).toFixed(2);
+      return `$${value}`;
+    }
+
+    return "[Price Pending Review]";
+  };
 
   return (
   <div>
@@ -355,12 +373,18 @@ const handleSubmitJob = () => {
             }}
           >
             <Typography variant="h6" fontWeight="bold">
-              Total Cost
+              Estimated Cost*
             </Typography>
             <Typography variant="h6" fontWeight="bold">
               ${totalCost?.toFixed(2)}
             </Typography>
           </Box>
+
+        <Alert
+          severity="info" sx={{ mb: 3, borderRadius: 2}}
+        >
+          *Please note: The final price and payment details, along with other relevant information, will be sent to your email.
+        </Alert>
 
         <Button
           variant="contained"
@@ -369,7 +393,7 @@ const handleSubmitJob = () => {
           onClick={handleSubmitJob}
           disabled={!isFormValid() || submitting}
         >
-          Submit Job
+          SUBMIT JOB
         </Button>
 
 

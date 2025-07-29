@@ -481,6 +481,8 @@ export default function Checkout() {
       
       </Grid>  
       )}
+      
+    {/* Order Summary */}
     <Grid
       sx={{
         position: 'fixed',
