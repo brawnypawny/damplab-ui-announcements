@@ -14,8 +14,10 @@ export const CREATE_WORKFLOW = gql`
 export const CREATE_JOB = gql`
     mutation createJob($createJobInput: CreateJob!) {
         createJob(createJobInput: $createJobInput) {
-            id
             name
+            username
+            institute
+            email
         }
     }
 `;
