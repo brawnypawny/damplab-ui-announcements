@@ -1,4 +1,4 @@
-// JobSubmitted.tsx
+// /submitted path in router
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useQuery } from '@apollo/client';
@@ -49,10 +49,15 @@ export default function JobSubmitted() {
     console.log(workflows);
   }, [workflows]);
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading job.</p>;
+  if (!data || !data.jobById) return <p>No job found.</p>;
+
   return (
     <Box>
       <h1>Job Submitted</h1>
       <p>Job ID: {jobId}</p>
+      <p>Job submitted at: {jobTime}</p>
       <p>
         <PDFDownloadLink
           document={
