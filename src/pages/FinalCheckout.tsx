@@ -18,7 +18,8 @@ import {
   Tab,
   Divider,
   Alert,
-  AlertColor
+  AlertColor,
+  CircularProgress, 
 } from '@mui/material';
 
 import {
@@ -84,6 +85,27 @@ export default function FinalCheckout() {
     message: '',
     severity: 'success'
   });
+
+  useEffect(() => {
+    // Guard: redirect if didn't come from previous page/state parsed
+    console.log('Location state:', location.state);
+    if (!location.state?.orderSummary) {
+      navigate("/checkout", { replace: true });
+    }
+  }, [location, navigate]);
+
+  if (!location.state?.orderSummary) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+}
 
   // GraphQL mutation for job creation
   const [createJob] = useMutation(CREATE_JOB, {
