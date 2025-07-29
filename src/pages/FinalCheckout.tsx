@@ -252,6 +252,7 @@ const handleSubmitJob = () => {
           fontSize: '0.875rem',
           fontWeight: 500,
           mb: 5,
+          borderWidth: '2px',
         }}
       >
         Back to Job
@@ -259,58 +260,66 @@ const handleSubmitJob = () => {
     </div>
     
     {/* Left Column - Forms */}
-    <Box sx={{ flex: '1 1 60%', marginRight: '40%' }}>
+    <Box sx={{ flex: '1 1 60%', marginRight: '50%' }}>
 
-      <Grid item xs={12}>
+      <Typography variant="h6" sx={{ mb: 1, textAlign: 'left', fontWeight: 500 }}>
+        Required Details
+      </Typography>
+
+      <Grid item xs={12} sx={{ mb: 3 }}>
         <TextField
           fullWidth
           label="Workflow Name"
           required
           variant="outlined"
           value={formData.workflowName}
-          onChange={handleInputChange("workflowName")}
+          onChange={handleInputChange('workflowName')}
           error={tabValue === 1 && formData.workflowName === ''}
           helperText={tabValue === 1 && formData.workflowName === '' ? 'This field is required' : ''}
         />
       </Grid>
 
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ mb: 1, textAlign: 'left', fontWeight: 500 }}>
         Contact Information
       </Typography>
-      <p>Does this look correct?</p>
-
-      {/* All info here is supposed to be non-input fields, but taken directly from AuthKeyCloak user info */}
-      <Grid container spacing={1.5}>       
-        <TextField
-          label="Username"
-          value={formData.username}
-          fullWidth
-          disabled
-        />
-        <input type="hidden" name="username" value={formData.email} />
-
-        <TextField
-          label="Institute"
-          value={formData.institute}
-          fullWidth
-          margin="normal"
-          disabled
-        />
-        <input type="hidden" name="Institute" value={formData.institute} />
-
-        <TextField
-          label="Email"
-          value={formData.email}
-          fullWidth
-          disabled
-        />
-        <input type="hidden" name="email" value={formData.email} />
-      </Grid>
-
-
-
       
-      </Box>
+      <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary', textAlign: 'left' }}>
+        Please verify your contact details below. These are required and read-only.
+      </Typography>
+
+      {/* Non-editable contact info */}
+      <Grid container spacing={0.5} direction="column">
+        <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Username"
+            value={formData.username}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="username" value={formData.username} />
+        </Grid>
+
+        <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Institute"
+            value={formData.institute}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="institute" value={formData.institute} />
+        </Grid>
+
+        <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Email"
+            value={formData.email}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="email" value={formData.email} />
+        </Grid>
+      </Grid>
+    </Box>
 
       {/* Right Column - Order Summary */}
       <Box
