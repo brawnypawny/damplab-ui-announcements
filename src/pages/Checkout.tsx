@@ -189,7 +189,7 @@ export default function Checkout() {
     if (matchRange) {
       const low = parseFloat(matchRange[1]).toFixed(2);
       const high = parseFloat(matchRange[2]).toFixed(2);
-      return `Estimated Price: $${low} - $${high}`;
+      return `$${low} - $${high}`;
     }
 
     // Match a single price like "150"
@@ -287,221 +287,198 @@ export default function Checkout() {
         }}>
 
         
-          {workflows.map((workflow, index) => (
-                      <Grid item xs={12} md={5} key={index}>
-            <Item>
-              <Box
+        {workflows.map((workflow, index) => (
+        <Grid item xs={12} md={5} space key={index}>
+          <Item sx={{ minHeight: 'unset' }}>
+            {/* Top row: Title with cost + actions */}
+            <Box
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-              <Typography variant="h6">
-                Workflow {index + 1}
-                </Typography>
-              <Typography variant="subtitle1">Cost : ${calculateServiceCost(workflow).toFixed(2)}</Typography>
-              </Box> 
-              <Divider sx={{ my: 2}} />
-              <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <Button variant="outlined" 
-                color="error"
-                onClick={() => handleRemoveWorkflow(index)}>
-                  Remove Workflow
-                </Button>
-                <Button variant="outlined" 
-                color="primary"
-                onClick = {() => handleOpen(index)}>
-                  Review Workflow
-                </Button>
+                alignItems: 'center',
+                m: 1.5,
+              }}
+            >
+              <Typography variant="h6" color="textPrimary">
+                Workflow {index + 1} ({`~$${calculateServiceCost(workflow).toFixed(2)}`})
+              </Typography>
 
-                <Modal
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleOpen(index)}
+                >
+                  Review
+                </Button>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleRemoveWorkflow(index)}
+                >
+                  Remove
+                </Button>
+              </Box>
+
+              {/* Review Modal */}
+              <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="workflow-review-modal"
-                >
-                <Box sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '80%',
-                  height: '80vh',
-                  bgcolor: 'background.paper',
-                  boxShadow: 24,
-                  p: 4,
-                  borderRadius: 2,
-                  overflow: 'auto'
-                }}>
-
-              <Button 
-                onClick={handleClose}
-                sx={{
-                position: 'absolute',
-                top: 20,
-                right: 20
-                }}>
-                  Close
-              </Button>
-
-                <Typography variant="h6">
-                  Review Workflow {selectedWorkflow !== null ? selectedWorkflow + 1 : ""}
-                </Typography>
-
-                
-                </Box>
-
-                </Modal>
-                </Box>
-                <Divider sx={{ my: 2}}/>
-                
-                <Box
-                 >
-                  <Accordion elevation={0}
-                  sx={{
-                    '& .MuiAccordionSummary-content': {
-                      margin: '8px 0',
-                    }
-                  }}>
-                    <AccordionSummary
-                    expandIcon={<ArrowDropDownIcon />}
-                    sx={{
-                      minHeight: '40px',
-                      '& .MuiTypography-root': {
-                        fontSize: '0.875rem',
-                        fontWeight: 500
-                      }
-                    }}
-
-                    aria-controls="panel1-content"
-                    id="panel1-header"
-                    >
-                      <Typography variant="subtitle1">Workflow details</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        width: '100%',
-        mb: 2  // margin bottom for spacing
-      }}
-    >
-      <Typography variant="body2" color="text.primary">
-        Processes
-      </Typography>
-      <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500}}>
-        Cost Summary
-      </Typography>
-    </Box>
-  <List>
-
-  {Object.entries(groupServicesByLabel(workflow)).map(([label, service]) => (
-  <ListItem key={label}>
-    <ListItemIcon>
-      <CircleIcon sx={{ fontSize: 8 }} /> 
-    </ListItemIcon>
-    <ListItemText 
-      primary={
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%'
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <span>{label}</span>
-            {service.count > 1 && (
-              <Typography 
-                variant="body2" 
-                color="text.secondary"
-                sx={{ ml: 1,
-                  fontSize: '0.875remd'
-                 }}
               >
-                (×{service.count})
-              </Typography>
-            )}
-          </Box>
-          <Typography variant="body2" color="text.secondary">
-            {formatPriceLabel(service.cost)}
-          </Typography>
-        </Box>
-      }
-      secondary={
-        <Box sx={{ mt: 1 }}>
-          {service.nodes.map((node, index) => (
-            <Box 
-              key={node.id} 
-              sx={{ mb: index !== service.nodes.length - 1 ? 2 : 0 }}
-            >
-              {service.count > 1 && (
-                <Typography 
-                  variant="body2" 
-                  color="text.secondary" 
-                  sx={{ ml: 2 }}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '80%',
+                    height: '80vh',
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: 2,
+                    overflow: 'auto'
+                  }}
                 >
-                  Service {index + 1}:
-                </Typography>
-              )}
-              {node.data?.formData?.map((param) => (
-  <Typography 
-    key={param.id} 
-    variant="body2" 
-    color="text.secondary" 
-    sx={{ ml: service.count > 1 ? 3 : 2,
-      fontSize: '0.875rem'
-     }}
-  >
-    {param.name}: {param.value}
-  </Typography>
-))}
-            </Box>
-          ))}
-        </Box>
-      }
-    />
-  </ListItem>
-))}
+                  <Button
+                    onClick={handleClose}
+                    sx={{
+                      position: 'absolute',
+                      top: 20,
+                      right: 20
+                    }}
+                  >
+                    Close
+                  </Button>
 
-
-
-  </List>
-   {/* Add this total cost section after the List */}
-   <Divider sx={{ my: 2 }} />
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '100%',
-      mt: 2,
-      px: 2
-    }}
-  >
-    <Typography variant="subtitle1" fontWeight="bold">
-      Total Cost
-    </Typography>
-    <Typography variant="subtitle1" 
-    fontWeight="bold"
-    sx={{ pr: 4}}>
-      ${calculateServiceCost(workflow).toFixed(2)}
-    </Typography>
-  </Box>
-</AccordionDetails>
-                  </Accordion>
+                  <Typography variant="h6">
+                    Review Workflow {selectedWorkflow !== null ? selectedWorkflow + 1 : ""}
+                  </Typography>
                 </Box>
-            </Item>
-          </Grid>
-          ))}
+              </Modal>
+            </Box>
 
-        
-        </Grid>  
-        )}
+            <Divider sx={{ my: 2}}/>
+            
+            {/* Accordion Section */}
+            <Accordion
+              elevation={0}
+              sx={{
+                '& .MuiAccordionSummary-content': { margin: '8px 0' },
+                '&:before': { display: 'none' }
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ArrowDropDownIcon />}
+                sx={{
+                  minHeight: '40px',
+                  '& .MuiTypography-root': { fontSize: '0.875rem', fontWeight: 500 },
+                  mt: -1
+                }}
+              >
+                <Typography variant="subtitle1" color="textSecondary">Workflow details</Typography>
+              </AccordionSummary>
+
+              <AccordionDetails>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    mb: 2
+                  }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Processes
+                  </Typography>
+                  <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500 }}>
+                    Cost Summary
+                  </Typography>
+                </Box>
+
+                <List>
+                  {Object.entries(groupServicesByLabel(workflow)).map(([label, service]) => (
+                    <ListItem key={label}>
+                      <ListItemIcon>
+                        <CircleIcon sx={{ fontSize: 8 }} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              width: '100%'
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <span>{label}</span>
+                              {service.count > 1 && (
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{ ml: 1, fontSize: '0.875rem' }}
+                                >
+                                  (×{service.count})
+                                </Typography>
+                              )}
+                            </Box>
+                            <Typography variant="body2" color="text.secondary">
+                              {formatPriceLabel(service.cost)}
+                            </Typography>
+                          </Box>
+                        }
+                        secondary={
+                          <Box sx={{ mt: 1 }}>
+                            {service.nodes.map((node, index) => (
+                              <Box
+                                key={node.id}
+                                sx={{ mb: index !== service.nodes.length - 1 ? 2 : 0 }}
+                              >
+                                {service.count > 1 && (
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ ml: 2 }}
+                                  >
+                                    Service {index + 1}:
+                                  </Typography>
+                                )}
+                                {node.data?.formData?.map((param) => (
+                                  <Typography
+                                    key={param.id}
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{
+                                      ml: service.count > 1 ? 3 : 2,
+                                      fontSize: '0.875rem'
+                                    }}
+                                  >
+                                    {param.name}: {param.value}
+                                  </Typography>
+                                ))}
+                              </Box>
+                            ))}
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+
+          </Item>
+
+        </Grid>
+        ))}
+      
+      </Grid>  
+      )}
 <Grid
   sx={{
     position: 'fixed',
@@ -520,23 +497,24 @@ export default function Checkout() {
   </Typography>
 
   <Box>
+    <Box sx={{maxHeight: 'calc(100vh - 400px)', overflowY: 'auto', pr: 1}}>
     {workflows.map((workflow, index) => (
-    <Box key={index} sx={{ mb: 3 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 1
-        }}
-      >
-        <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500, mb: -2 }}>
-          Workflow {index + 1}
-        </Typography>
-        {/*<Typography variant="subtitle1" sx={{ fontSize: '0.875rem' }}>
-          ${calculateServiceCost(workflow).toFixed(2)}
-        </Typography>*/}
-      </Box>
+      <Box key={index} sx={{ mb: 3}}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 1
+          }}
+        >
+          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500, mb: -2 }}>
+            Workflow {index + 1}
+          </Typography>
+          {/*<Typography variant="subtitle1" sx={{ fontSize: '0.875rem' }}>
+            ${calculateServiceCost(workflow).toFixed(2)}
+          </Typography>*/}
+        </Box>
 
         <List dense>
           {workflow.map((node) => (
@@ -567,6 +545,7 @@ export default function Checkout() {
         </List>
       </Box>
     ))}
+  </Box>
 
     <Divider sx={{ my: 2 }} />
     
