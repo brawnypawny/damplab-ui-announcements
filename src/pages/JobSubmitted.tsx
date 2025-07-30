@@ -5,13 +5,19 @@ import { useQuery } from '@apollo/client';
 import { GET_JOB_BY_ID } from '../gql/queries';
 import { Workflow } from '../gql/graphql';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
-import { Box } from '@mui/material';
+import { Box, Alert } from '@mui/material';
 import JobPDFDocument from '../components/JobPDFDocument';
+import { useParams } from "react-router";
+
 
 export default function JobSubmitted() {
   // get job id from navigation state
-  const location = useLocation();
-  const [jobId, setJobId] = useState(location.state.id);
+  //const location = useLocation(); //changed to useParams directly from url since useLocation is local + temp
+  const { jobId } = useParams<{ jobId: string }>();
+
+  if (!jobId) { //guard in case user navigates to /submit - no ID
+    return <Alert severity="error">Invalid Job ID</Alert>;}
+
   const [value, setValue] = useState(`https://damplab.sail.codes/client_view/${jobId}`);
 
   const [workflowName, setWorkflowName] = useState('');
@@ -25,10 +31,10 @@ export default function JobSubmitted() {
   const [jobNotes, setJobNotes] = useState('');
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
-  const { loading, error, data } = useQuery(GET_JOB_BY_ID, {
+  const { loading, error, data } = useQuery(GET_JOB_BY_ID, { //should later check logged in user token to access
     variables: { id: jobId },
+    skip: !jobId,
     onCompleted: (data) => {
-      console.log('job successfully loaded: ', data);
       setWorkflowName(data.jobById.workflows[0].name);
       setWorkflowState(data.jobById.workflows[0].state);
       setJobName(data.jobById.name);
@@ -50,7 +56,10 @@ export default function JobSubmitted() {
   }, [workflows]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading job.</p>;
+  if (error) {
+    console.log("GraphQL error:", error);
+    return <Alert severity="error">Sorry, job not found or you don’t have access.</Alert>;
+  }
   if (!data || !data.jobById) return <p>No job found.</p>;
 
   return (
