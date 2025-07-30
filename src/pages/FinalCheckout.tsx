@@ -129,8 +129,11 @@ export default function FinalCheckout() {
       });
       
       // Navigate after showing the success message
+      const jobId = data.createJob.id;
+      const username = data.createJob.username; 
+
       setTimeout(() => {
-        navigate("/submitted", { state: { id: data.createJob.id } });
+        navigate(`/jobs/${jobId}`);
       }, 2000);
     },
     onError: (error: any) => {
