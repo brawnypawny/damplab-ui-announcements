@@ -219,10 +219,28 @@ const handleSubmitJob = () => {
     console.error('Job submission failed:', error);
     setSubmitting(false); // Re-enable button if error occurs
   }
-
-
 };
 
+  const formatPriceLabel = (price: string): string => {
+    if (!price) return "[Price Pending Review]";
+
+    // Match a range like "100 - 200"
+    const matchRange = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
+    if (matchRange) {
+      const low = parseFloat(matchRange[1]).toFixed(2);
+      const high = parseFloat(matchRange[2]).toFixed(2);
+      return `$${low} - $${high}`;
+    }
+
+    // Match a single price like "150"
+    const matchSingle = price.match(/^\d+(?:\.\d+)?$/);
+    if (matchSingle) {
+      const value = parseFloat(price).toFixed(2);
+      return `$${value}`;
+    }
+
+    return "[Price Pending Review]";
+  };
 
   return (
   <div>
@@ -252,6 +270,7 @@ const handleSubmitJob = () => {
           fontSize: '0.875rem',
           fontWeight: 500,
           mb: 5,
+          borderWidth: '2px',
         }}
       >
         Back to Job
@@ -259,58 +278,66 @@ const handleSubmitJob = () => {
     </div>
     
     {/* Left Column - Forms */}
-    <Box sx={{ flex: '1 1 60%', marginRight: '40%' }}>
+    <Box sx={{ flex: '1 1 60%', marginRight: '50%' }}>
 
-      <Grid item xs={12}>
+      <Typography variant="h6" sx={{ mb: 1, textAlign: 'left', fontWeight: 500 }}>
+        Required Details
+      </Typography>
+
+      <Grid item xs={12} sx={{ mb: 3 }}>
         <TextField
           fullWidth
           label="Workflow Name"
           required
           variant="outlined"
           value={formData.workflowName}
-          onChange={handleInputChange("workflowName")}
+          onChange={handleInputChange('workflowName')}
           error={tabValue === 1 && formData.workflowName === ''}
           helperText={tabValue === 1 && formData.workflowName === '' ? 'This field is required' : ''}
         />
       </Grid>
 
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ mb: 1, textAlign: 'left', fontWeight: 500 }}>
         Contact Information
       </Typography>
-      <p>Does this look correct?</p>
-
-      {/* All info here is supposed to be non-input fields, but taken directly from AuthKeyCloak user info */}
-      <Grid container spacing={1.5}>       
-        <TextField
-          label="Username"
-          value={formData.username}
-          fullWidth
-          disabled
-        />
-        <input type="hidden" name="username" value={formData.email} />
-
-        <TextField
-          label="Institute"
-          value={formData.institute}
-          fullWidth
-          margin="normal"
-          disabled
-        />
-        <input type="hidden" name="Institute" value={formData.institute} />
-
-        <TextField
-          label="Email"
-          value={formData.email}
-          fullWidth
-          disabled
-        />
-        <input type="hidden" name="email" value={formData.email} />
-      </Grid>
-
-
-
       
-      </Box>
+      <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary', textAlign: 'left' }}>
+        Please verify your contact details below. These are required and read-only.
+      </Typography>
+
+      {/* Non-editable contact info */}
+      <Grid container spacing={0.5} direction="column">
+        <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Username"
+            value={formData.username}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="username" value={formData.username} />
+        </Grid>
+
+        <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Institute"
+            value={formData.institute}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="institute" value={formData.institute} />
+        </Grid>
+
+        <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Email"
+            value={formData.email}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="email" value={formData.email} />
+        </Grid>
+      </Grid>
+    </Box>
 
       {/* Right Column - Order Summary */}
       <Box
@@ -357,12 +384,18 @@ const handleSubmitJob = () => {
             }}
           >
             <Typography variant="h6" fontWeight="bold">
-              Total Cost
+              Estimated Cost*
             </Typography>
             <Typography variant="h6" fontWeight="bold">
               ${totalCost?.toFixed(2)}
             </Typography>
           </Box>
+
+        <Alert
+          severity="info" sx={{ mb: 3, borderRadius: 2}}
+        >
+          *Please note: The final price and payment details, along with other relevant information, will be sent to your email.
+        </Alert>
 
         <Button
           variant="contained"
@@ -371,7 +404,7 @@ const handleSubmitJob = () => {
           onClick={handleSubmitJob}
           disabled={!isFormValid() || submitting}
         >
-          Submit Job
+          SUBMIT JOB
         </Button>
 
 

@@ -481,27 +481,78 @@ export default function Checkout() {
       
       </Grid>  
       )}
-<Grid
-  sx={{
-    position: 'fixed',
-    right: '40px',
-    top: '100px',
-    width: '40%',
-    backgroundColor: '#f5f5f5',
-    padding: 3,
-    border: '1px solid #ddd',
-    borderRadius: 2,
-    boxShadow: 3
-  }}
->
-  <Typography variant="h6" sx={{ mb: 2 }}>
-    Order Summary
-  </Typography>
+      
+    {/* Order Summary */}
+    <Grid
+      sx={{
+        position: 'fixed',
+        right: '40px',
+        top: '100px',
+        width: '40%',
+        backgroundColor: '#f5f5f5',
+        padding: 3,
+        border: '1px solid #ddd',
+        borderRadius: 2,
+        boxShadow: 3
+      }}
+    >
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        Order Summary
+      </Typography>
 
-  <Box>
-    <Box sx={{maxHeight: 'calc(100vh - 400px)', overflowY: 'auto', pr: 1}}>
-    {workflows.map((workflow, index) => (
-      <Box key={index} sx={{ mb: 3}}>
+      <Box>
+        <Box sx={{maxHeight: 'calc(100vh - 400px)', overflowY: 'auto', pr: 1}}>
+        {workflows.map((workflow, index) => (
+          <Box key={index} sx={{ mb: 3}}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 1
+              }}
+            >
+              <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500, mb: -2 }}>
+                Workflow {index + 1}
+              </Typography>
+              {/*<Typography variant="subtitle1" sx={{ fontSize: '0.875rem' }}>
+                ${calculateServiceCost(workflow).toFixed(2)}
+              </Typography>*/}
+            </Box>
+
+            <List dense>
+              {workflow.map((node) => (
+                <ListItem
+                  key={node.id}
+                  sx={{ pl: 2, display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <ListItemIcon sx={{ minWidth: '30px' }}>
+                      <CircleIcon sx={{ fontSize: '0.5rem' }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography sx={{ fontSize: '0.85rem' }}>
+                          {node.data.label}
+                        </Typography>
+                      }
+                    />
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize: '0.85rem', textAlign: 'right', minWidth: '80px' }}
+                  >
+                    {formatPriceLabel(node.data.price)}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        ))}
+      </Box>
+
+        <Divider sx={{ my: 2 }} />
+        
         <Box
           sx={{
             display: 'flex',
@@ -510,82 +561,33 @@ export default function Checkout() {
             mb: 1
           }}
         >
-          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500, mb: -2 }}>
-            Workflow {index + 1}
+          <Typography variant="h6" fontWeight="bold">
+            Estimated Cost*
           </Typography>
-          {/*<Typography variant="subtitle1" sx={{ fontSize: '0.875rem' }}>
-            ${calculateServiceCost(workflow).toFixed(2)}
-          </Typography>*/}
+          <Typography variant="h6" fontWeight="bold">
+            ${calculateTotalJobCost(workflows).toFixed(2)}
+          </Typography>
         </Box>
 
-        <List dense>
-          {workflow.map((node) => (
-            <ListItem
-              key={node.id}
-              sx={{ pl: 2, display: 'flex', justifyContent: 'space-between' }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ListItemIcon sx={{ minWidth: '30px' }}>
-                  <CircleIcon sx={{ fontSize: '0.5rem' }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography sx={{ fontSize: '0.85rem' }}>
-                      {node.data.label}
-                    </Typography>
-                  }
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{ fontSize: '0.85rem', textAlign: 'right', minWidth: '80px' }}
-              >
-                {formatPriceLabel(node.data.price)}
-              </Typography>
-            </ListItem>
-          ))}
-        </List>
+        <Alert
+          severity="info" color="error" sx={{ mb: 3, borderRadius: 2}}
+        >
+          *This cost is subject to lab review. Final pricing is likely to vary.
+        </Alert>
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleFinalCheckout}
+          disabled={workflows.length === 0}
+          sx={{
+            width: '100%'
+          }}
+        >
+          CHECKOUT
+        </Button>
       </Box>
-    ))}
-  </Box>
-
-    <Divider sx={{ my: 2 }} />
-    
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 1
-      }}
-    >
-      <Typography variant="h6" fontWeight="bold">
-        Estimated Cost*
-      </Typography>
-      <Typography variant="h6" fontWeight="bold">
-        ${calculateTotalJobCost(workflows).toFixed(2)}
-      </Typography>
-    </Box>
-
-    <Alert
-      severity="info" color="error" sx={{ mb: 3, borderRadius: 2}}
-    >
-      *This cost is subject to lab review. Final pricing is likely to vary.
-    </Alert>
-
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={handleFinalCheckout}
-      disabled={workflows.length === 0}
-      sx={{
-        width: '100%'
-      }}
-    >
-      CHECKOUT
-    </Button>
-  </Box>
-</Grid>
+    </Grid>
   </div>
 
   );
