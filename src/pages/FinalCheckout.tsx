@@ -32,6 +32,7 @@ interface SnackbarState {
   open: boolean;
   message: string;
   severity: AlertColor;
+  showSpinner?: boolean;
 }
 
 interface WorkflowCost {
@@ -108,7 +109,7 @@ export default function FinalCheckout() {
 }
 
   // GraphQL mutation for job creation
-  const [createJob] = useMutation(CREATE_JOB, {
+  const [createJob, {loading: jobLoading}] = useMutation(CREATE_JOB, {
     onCompleted: (data) => {
       // Store job details in localStorage for persistence
       let fileName = `${data.createJob.id}_${new Date().toLocaleString()}`;
@@ -122,7 +123,9 @@ export default function FinalCheckout() {
       setSnackbarState({
         open: true,
         message: 'Job submitted successfully!',
-        severity: 'success'
+        severity: 'success',
+        showSpinner: true
+        
       });
       
       // Navigate after showing the success message
@@ -135,7 +138,8 @@ export default function FinalCheckout() {
       setSnackbarState({
         open: true,
         message: 'Failed to submit job. Please try again.',
-        severity: 'error'
+        severity: 'error',
+        showSpinner:false
       });
     },
   });
@@ -202,7 +206,14 @@ const handleSubmitJob = () => {
         )
       }))
     };
-    console.log("Submitting job with data:", data);
+    setSnackbarState({
+      open: true,
+      message: 'Submitting job...',
+      severity: 'info',
+      showSpinner: true
+    });
+
+
     createJob({ variables: { createJobInput: data } });
     } catch (error) {
     console.error('Job submission failed:', error);
@@ -373,14 +384,28 @@ const handleSubmitJob = () => {
           >
             <Alert
               onClose={handleSnackbarClose}
-              severity={snackbarState.severity}
               variant="filled"
+              severity={snackbarState.severity}
+              color={
+                snackbarState.severity === 'success'
+                  ? 'primary'
+                  : snackbarState.severity === 'error'
+                  ? 'secondary'
+                  : snackbarState.severity === 'info'
+                  ? 'info'
+                  : undefined
+              }
               sx={{
                 width: '100%',
                 minWidth: '300px',
                 boxShadow: 2,
                 fontSize: '0.95rem',
               }}
+              icon={
+                snackbarState.showSpinner ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : undefined
+              }
             >
               {snackbarState.message}
             </Alert>
