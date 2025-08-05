@@ -85,7 +85,7 @@ export default function LoginForm() {
             <ViewStreamIcon sx={{m:1, ml:-3}}/>DASHBOARD<br/>(See Submitted Jobs)
           </Button> 
           <Button variant="contained" onClick={() => navigate('/edit')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
-            <EditSquareIcon sx={{m:1, ml:-3}}/>Admin Edit<br/>(Services And More)
+            <EditIcon sx={{m:1, ml:-3}}/>Admin Edit<br/>(Services And More)
           </Button>
           <Button variant="contained" onClick={() => navigate('/release_notes')}  sx={{ m: 2, width: '210px', textTransform: 'none' }}>
             <FormatListBulletedIcon sx={{m:1, ml:-3}}/>Release Notes<br/>(+ Other Admin Info)
