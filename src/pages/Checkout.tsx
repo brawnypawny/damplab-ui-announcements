@@ -97,8 +97,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Checkout() {
   const navigate = useNavigate();
   const val = useContext(CanvasContext);
-  const rawWorkflows = getWorkflowsFromGraph(val.nodes, val.edges) || [];
-  console.log('Raw workflows:', rawWorkflows);
+  const rawWorkflows = getWorkflowsFromGraph(val.nodes, val.edges) || [];;
 
   const [workflows, setWorkflows] = useState<WorkflowNode[][]>(rawWorkflows);
   const [open, setOpen] = useState(false);
@@ -163,28 +162,17 @@ export default function Checkout() {
   };
 
   const calculateServiceCost = (workflow: WorkflowNode[]) => {
-    return workflow.reduce((total, node) => total + parsePriceToNumber(node.data.price), 0);
+    return workflow.reduce((total, node) => total + (node.data.price), 0);
   };
 
-  const formatPriceLabel = (price: string): string => {
+  const formatPriceLabel = (price: number): string => {
     if (!price) return "[Price Pending Review]";
 
-    // Match a range like "100 - 200"
-    const matchRange = price.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/);
-    if (matchRange) {
-      const low = parseFloat(matchRange[1]).toFixed(2);
-      const high = parseFloat(matchRange[2]).toFixed(2);
-      return `$${low} - $${high}`;
+    if (price > 0) {
+      return `$${price.toFixed(2)}`
+    } else {
+      return "[Price Pending Review]"
     }
-
-    // Match a single price like "150"
-    const matchSingle = price.match(/^\d+(?:\.\d+)?$/);
-    if (matchSingle) {
-      const value = parseFloat(price).toFixed(2);
-      return `$${value}`;
-    }
-
-    return "[Price Pending Review]";
   };
 
   const groupServicesByLabel = (workflow: WorkflowNode[]) => {

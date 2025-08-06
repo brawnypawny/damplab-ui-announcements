@@ -1,4 +1,3 @@
-
 //V4
 
 import React, { SyntheticEvent, useState, useEffect, useContext } from 'react';
@@ -6,6 +5,7 @@ import { useMutation } from "@apollo/client";
 import { CREATE_JOB } from "../gql/mutations";
 import { CanvasContext } from "../contexts/Canvas";
 import { useLocation, useNavigate } from 'react-router';
+import { UserContext, UserContextProps } from '../contexts/UserContext';
 import {
   Snackbar,
   Typography,
@@ -80,6 +80,9 @@ export default function FinalCheckout() {
   const navigate = useNavigate();
   const [tabValue, setTabValue] = React.useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const userContext: UserContextProps = useContext(UserContext);
+  const userProps = userContext.userProps;
+  const token = userContext.userProps?.accessToken;
 
   const [snackbarState, setSnackbarState] = useState<SnackbarState>({
     open: false,
@@ -193,9 +196,9 @@ const handleSubmitJob = () => {
   try {
     const data = {
       name: formData.workflowName,
-      username: formData.username,
-      email: formData.email,
-      institute: formData.institute, // Required
+      //username: formData.username,
+      //email: formData.email,
+      institute: formData.institute,
       notes: '', // Optional
       workflows: workflows.map((workflow: any) => ({
         name: `Workflow-${workflow.id || workflow[0]?.id}`,
@@ -216,13 +219,21 @@ const handleSubmitJob = () => {
       showSpinner: true
     });
 
-
-    createJob({ variables: { createJobInput: data } });
-    } catch (error) {
+    createJob({ 
+      variables: { createJobInput: data },
+      context: {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      },
+    });
+    //alert('Job created successfully!');
+  } catch (error) {
     console.error('Job submission failed:', error);
+    
+    //alert('Error creating job.');
     setSubmitting(false); // Re-enable button if error occurs
-  }
-};
+  }}
 
   const formatPriceLabel = (price: string): string => {
     if (!price) return "[Price Pending Review]";
@@ -305,7 +316,7 @@ const handleSubmitJob = () => {
       </Typography>
       
       <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary', textAlign: 'left' }}>
-        Please verify your contact details below. These are required and read-only.
+        Please verify your contact details below. These are read-only.
       </Typography>
 
       {/* Non-editable contact info */}
