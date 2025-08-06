@@ -83,6 +83,12 @@ export default function FinalCheckout() {
   const userContext: UserContextProps = useContext(UserContext);
   const userProps = userContext.userProps;
   const token = userContext.userProps?.accessToken;
+  //formData retrieved from auth
+  const username = userProps.idTokenParsed?.preferred_username ?? '';
+  const email = userProps.idTokenParsed?.email ?? '';
+  const name = userProps.idTokenParsed?.name ?? '';
+
+
 
   const [snackbarState, setSnackbarState] = useState<SnackbarState>({
     open: false,
@@ -166,8 +172,8 @@ export default function FinalCheckout() {
   const [formData, setFormData] = useState({
     workflowName: '',
     username: '',
-    institute: '',
     email: '',
+    institute: ''
   });
 
 
@@ -323,33 +329,33 @@ const handleSubmitJob = () => {
       <Grid container spacing={0.5} direction="column">
         <Grid item xs={12} sx={{ mb: 1 }}>
           <TextField
-            label="Username"
-            value={formData.username}
+            label="Username" // Will need to refactor to display Family name + Given name from user data
+            value={username ?? ''}
             fullWidth
             disabled
           />
-          <input type="hidden" name="username" value={formData.username} />
+          <input type="hidden" name="username" value={username ?? ''} />
+        </Grid>
+                <Grid item xs={12} sx={{ mb: 1 }}>
+          <TextField
+            label="Email"
+            value={email ?? ''}
+            fullWidth
+            disabled
+          />
+          <input type="hidden" name="email" value={email ?? ''} />
         </Grid>
 
         <Grid item xs={12} sx={{ mb: 1 }}>
           <TextField
             label="Institute"
-            value={formData.institute}
+            value={formData.institute ?? ''}
             fullWidth
-            disabled
+            disabled //can change
           />
-          <input type="hidden" name="institute" value={formData.institute} />
+          <input type="hidden" name="institute" value={formData.institute ?? ''} />
         </Grid>
 
-        <Grid item xs={12} sx={{ mb: 1 }}>
-          <TextField
-            label="Email"
-            value={formData.email}
-            fullWidth
-            disabled
-          />
-          <input type="hidden" name="email" value={formData.email} />
-        </Grid>
       </Grid>
     </Box>
 
