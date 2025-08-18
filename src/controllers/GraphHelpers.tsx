@@ -67,7 +67,7 @@ export const addNodeToCanvasWithEdge = (services: any[], sourceId: string, servi
             //type: 'smoothstep',
         };
         setEdges((eds: any) => eds.concat(newEdge));
-        console.log("newEdge:", newEdge)
+        // console.log("newEdge:", newEdge)
     }
 
     setNodes((nds: any) => nds.concat(newNode));
@@ -79,41 +79,39 @@ export const addNodeToCanvasWithEdge = (services: any[], sourceId: string, servi
 export const getWorkflowsFromGraph = (nodes: any[], edges: any[]) => {
   if (nodes.length === 0) return [];
 
-  // find start nodes (no incoming edges)
-  const startNodes = nodes.filter((node) => {
-    return !edges.some((e) => e.target === node.id);
+  // Build adjacency list from edges
+  const adjacency: Record<string, string[]> = {};
+  nodes.forEach((node) => {
+    adjacency[node.id] = [];
+  });
+  edges.forEach((e) => {
+    adjacency[e.source].push(e.target);
+    adjacency[e.target].push(e.source); // undirected, so add both ways
   });
 
-  // recursive DFS to explore all paths
-  const traverse = (nodeId: string, path: any[]): any[][] => {
+  const visited = new Set<string>();
+  const workflows: any[][] = [];
+
+  // DFS to collect all connected nodes
+  const dfs = (nodeId: string, group: any[]) => {
+    visited.add(nodeId);
     const node = nodes.find((n) => n.id === nodeId);
-    if (!node) return [];
+    if (node) group.push(node);
 
-    const newPath = [...path, node];
-
-    // find all edges going out of this node
-    const outgoing = edges.filter((e) => e.source === nodeId);
-
-    if (outgoing.length === 0) {
-      // leaf node → return completed path
-      return [newPath];
-    }
-
-    // branch: follow each outgoing edge separately
-    let paths: any[][] = [];
-    outgoing.forEach((edge) => {
-      const childPaths = traverse(edge.target, newPath);
-      paths = paths.concat(childPaths);
+    adjacency[nodeId].forEach((neighborId) => {
+      if (!visited.has(neighborId)) {
+        dfs(neighborId, group);
+      }
     });
-
-    return paths;
   };
 
-  // build workflows starting from each start node
-  let workflows: any[][] = [];
-  startNodes.forEach((start) => {
-    const paths = traverse(start.id, []);
-    workflows = workflows.concat(paths);
+  // find all connected components
+  nodes.forEach((node) => {
+    if (!visited.has(node.id)) {
+      const group: any[] = [];
+      dfs(node.id, group);
+      workflows.push(group);
+    }
   });
 
   return workflows;
