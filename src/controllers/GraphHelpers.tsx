@@ -67,6 +67,7 @@ export const addNodeToCanvasWithEdge = (services: any[], sourceId: string, servi
             //type: 'smoothstep',
         };
         setEdges((eds: any) => eds.concat(newEdge));
+        console.log("newEdge:", newEdge)
     }
 
     setNodes((nds: any) => nds.concat(newNode));
@@ -75,59 +76,48 @@ export const addNodeToCanvasWithEdge = (services: any[], sourceId: string, servi
     return nodeId;
 }
 
-export const getWorkflowsFromGraph = (nodes: any, edges: any) => {
+export const getWorkflowsFromGraph = (nodes: any[], edges: any[]) => {
+  if (nodes.length === 0) return [];
 
-    if (nodes.length === 0) return [];
-    // loop over edges and identify start nodes
-    let startNodes: any = [];
-    // if edge.source is not in edges.target, then it is a start node
-    edges.forEach((edge: any) => {
-        let isStartNode = true;
-        edges.forEach((e: any) => {
-            if (edge.source === e.target) {
-                isStartNode = false;
-            }
-        });
-        if (isStartNode) {
-            startNodes.push(edge.source);
-        }
+  // find start nodes (no incoming edges)
+  const startNodes = nodes.filter((node) => {
+    return !edges.some((e) => e.target === node.id);
+  });
+
+  // recursive DFS to explore all paths
+  const traverse = (nodeId: string, path: any[]): any[][] => {
+    const node = nodes.find((n) => n.id === nodeId);
+    if (!node) return [];
+
+    const newPath = [...path, node];
+
+    // find all edges going out of this node
+    const outgoing = edges.filter((e) => e.source === nodeId);
+
+    if (outgoing.length === 0) {
+      // leaf node → return completed path
+      return [newPath];
+    }
+
+    // branch: follow each outgoing edge separately
+    let paths: any[][] = [];
+    outgoing.forEach((edge) => {
+      const childPaths = traverse(edge.target, newPath);
+      paths = paths.concat(childPaths);
     });
 
-    // add start nodes that are not in edges.source or destination
-    nodes.forEach((node: any) => {
-        let isStartNode = true;
-        edges.forEach((e: any) => {
-            if (node.id === e.source || node.id === e.target) {
-                isStartNode = false;
-            }
-        });
-        if (isStartNode) {
-            startNodes.push(node.id);
-        }
-    });
+    return paths;
+  };
 
-    // loop over start nodes and create workflows
-    let workflows: any = [];
-    startNodes.forEach((startNode: any) => {
-        let workflow: any = [];
-        let node = nodes.find((n: any) => n.id === startNode);
-        workflow.push(node);
-        let i = 0;
-        while (i < edges.length) {
-            let edge = edges[i];
-            if (edge.source === node.id) {
-                node = nodes.find((n: any) => n.id === edge.target);
-                workflow.push(node);
-                i = 0;
-            } else {
-                i++;
-            }
-        }
-        workflows.push(workflow);
-    });
-    
-    return workflows;
-}
+  // build workflows starting from each start node
+  let workflows: any[][] = [];
+  startNodes.forEach((start) => {
+    const paths = traverse(start.id, []);
+    workflows = workflows.concat(paths);
+  });
+
+  return workflows;
+};
 
 export const transformNodesToGQL = (nodes: any) => {
 
